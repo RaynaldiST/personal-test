@@ -19,6 +19,8 @@ class ProfilePageState extends State<ProfilePage> {
     var cubit = context.read<ProfileCubit>();
     return Scaffold(
       appBar: AppBar(
+        elevation: Util.baseWidthHeight1,
+        backgroundColor: Palette.white,
         title: Text(
           "My Profile",
           style: TextStyle(
@@ -72,11 +74,12 @@ class ProfilePageState extends State<ProfilePage> {
         horizontal: Util.basePaddingMargin16,
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            alignment: Alignment.center,
-            width: Util.baseWidthHeight120,
             height: Util.baseWidthHeight120,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Palette.blue,
@@ -92,9 +95,8 @@ class ProfilePageState extends State<ProfilePage> {
           ),
           SizedBox(height: Util.baseWidthHeight8),
           Container(
-            alignment: Alignment.center,
-            width: Util.baseWidthHeight120,
             height: Util.baseWidthHeight24,
+            alignment: Alignment.center,
             child: Text(
               "${cubit.user.firstName} ${cubit.user.lastName}",
               style: TextStyle(
@@ -107,7 +109,6 @@ class ProfilePageState extends State<ProfilePage> {
           SizedBox(height: Util.baseWidthHeight8),
           Container(
             alignment: Alignment.center,
-            width: Util.baseWidthHeight120,
             height: Util.baseWidthHeight24,
             child: Text(
               "${cubit.user.email}",
@@ -121,7 +122,6 @@ class ProfilePageState extends State<ProfilePage> {
           SizedBox(height: Util.baseWidthHeight8),
           Container(
             alignment: Alignment.center,
-            width: Util.baseWidthHeight120,
             height: Util.baseWidthHeight24,
             child: Text(
               "${cubit.user.dob}",

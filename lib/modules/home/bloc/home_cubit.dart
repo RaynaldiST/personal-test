@@ -8,7 +8,11 @@ class HomeCubit extends BaseCubit<HomeState> {
   late int currentIndex = 0;
 
   @override
-  FutureOr<void> initCubit() {}
+  FutureOr<void> initCubit() {
+    emit(HomeLoading());
+
+    changePage(currentIndex);
+  }
 
   @override
   FutureOr<void> loadCubit() {}

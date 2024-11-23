@@ -212,6 +212,7 @@ class DetailContactPageState extends State<DetailContactPage> {
             style: TextStyle(
               color: Palette.blue,
               fontWeight: FontWeight.w500,
+              fontStyle: FontStyle.italic,
               fontSize: Util.baseTextSize16,
             ),
           ),

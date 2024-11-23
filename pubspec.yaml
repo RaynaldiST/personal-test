@@ -23,6 +23,7 @@ dependencies:
   connectivity_plus: ^2.2.0
   flutter_secure_storage: ^4.2.1
   fluttertoast: ^8.2.8
+  grouped_list: ^6.0.0
 
 
 dev_dependencies:

@@ -20,8 +20,7 @@ class ProfileCubit extends BaseCubit<ProfileState> {
     emit(ProfileLoading());
 
     String? userString = await secureStorage.read(key: Preferences.user);
-    log(userString!);
-    user = User.fromJson(json.decode(userString));
+    user = User.fromJson(json.decode(userString!));
 
     userInitial = "${user.firstName![0]}${user.lastName![0]}";
 
