@@ -156,7 +156,7 @@ class AuthPageState extends State<AuthPage> {
                 "Login",
                 style: TextStyle(
                   color: Palette.blue,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   fontSize: Util.baseTextSize18,
                 ),
               ),

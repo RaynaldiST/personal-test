@@ -23,33 +23,16 @@ class MainPageState extends State<MainPage> {
               (Route<dynamic> route) => false,
             );
           }
-        },
-        builder: (context, state) {
-          if (state is MainLoaded) {
-            if (state is MainFirstPage) {
-              // First Page
-              return Container();
-            }
 
-            if (state is MainSecondPage) {
-              // Second Page
-              return Container();
-            }
-
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  "My Contacts",
-                  style: TextStyle(
-                    color: Palette.black,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              body: Container(),
+          if (state is MainAuthenticated) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (Route<dynamic> route) => false,
             );
           }
-
+        },
+        builder: (context, state) {
           return Container(color: Palette.white);
         },
       ),

@@ -17,7 +17,7 @@ class Env {
   static bool get isDevelopment {
     switch (envValue) {
       case EnvValue.DEVELOPMENT:
-        return true;
+        return false;
       case EnvValue.STAGING:
         return true;
       case EnvValue.PRODUCTION:

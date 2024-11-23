@@ -19,12 +19,7 @@ class MainUnauthenticated extends MainState {
   List<Object?> get props => [];
 }
 
-class MainFirstPage extends MainState {
-  @override
-  List<Object?> get props => [];
-}
-
-class MainSecondPage extends MainState {
+class MainAuthenticated extends MainState {
   @override
   List<Object?> get props => [];
 }

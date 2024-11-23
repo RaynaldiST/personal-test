@@ -9,7 +9,6 @@ class MainCubit extends BaseCubit<MainState> {
   MainCubit() : super(MainLoading());
 
   FlutterSecureStorage secureStorage = FlutterSecureStorage();
-  late int currentIndex = 0;
 
   @override
   FutureOr<void> initCubit() async {
@@ -20,9 +19,7 @@ class MainCubit extends BaseCubit<MainState> {
       emit(MainUnauthenticated());
       return;
     } else {
-      // Load home page
-      emit(MainLoaded());
-      emit(MainFirstPage());
+      emit(MainAuthenticated());
     }
   }
 
@@ -31,18 +28,4 @@ class MainCubit extends BaseCubit<MainState> {
 
   @override
   FutureOr<void> postCubit() {}
-
-  FutureOr<void> changePage(int index) async {
-    if (index == 0) {
-      currentIndex = index;
-      emit(MainFirstPage());
-      return;
-    }
-
-    if (index == 1) {
-      currentIndex = index;
-      emit(MainSecondPage());
-      return;
-    }
-  }
 }

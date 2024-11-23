@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -28,10 +29,15 @@ class AuthCubit extends BaseCubit<AuthState> {
   FutureOr<void> postCubit() {}
 
   FutureOr<void> validateUser() {
-    secureStorage.write(
-      key: Preferences.user,
-      value: "lidiawilkins@furnafix.com",
-    );
+    Map<String, String> user = {
+      "id": "5c8a80f575270ddb54a18f86",
+      "firstName": "Lidia",
+      "lastName": "Wilkins",
+      "email": "lidiawilkins@furnafix.com",
+      "dob": "30/1/1962"
+    };
+
+    secureStorage.write(key: Preferences.user, value: jsonEncode(user));
 
     emit(AuthAuthenticate());
   }
