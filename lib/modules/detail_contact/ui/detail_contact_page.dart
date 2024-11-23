@@ -71,19 +71,38 @@ class DetailContactPageState extends State<DetailContactPage> {
           /// Main Information
           containerSpacer("Main Information"),
 
-          formFirstName(cubit),
+          inputTextField(cubit, cubit.firstNameController, "First Name", true),
 
-          formLastName(cubit),
+          inputTextField(cubit, cubit.lastNameController, "Last Name", true),
+
+          SizedBox(height: Util.baseWidthHeight16),
 
           /// Sub Information
           containerSpacer("Sub Information"),
 
-          formEmail(cubit),
+          inputTextField(cubit, cubit.emailController, "Email"),
 
-          formDob(cubit),
+          inputTextField(cubit, cubit.dobController, "Date of Birth"),
 
-          SizedBox(height: Util.baseWidthHeight56),
-          Container(
+          SizedBox(height: Util.baseWidthHeight16),
+          containerActionButton(context, cubit),
+        ],
+      ),
+    );
+  }
+
+  Widget containerActionButton(
+    BuildContext context,
+    DetailContactCubit cubit,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Button Update
+        Visibility(
+          visible: cubit.isUpdateActive,
+          child: Container(
             width: MediaQuery.of(context).size.width,
             height: Util.baseWidthHeight48,
             child: TextButton(
@@ -102,7 +121,7 @@ class DetailContactPageState extends State<DetailContactPage> {
                 ),
               ),
               child: Text(
-                "Update my detail",
+                "Update",
                 style: TextStyle(
                   color: Palette.blue,
                   fontWeight: FontWeight.w800,
@@ -111,8 +130,72 @@ class DetailContactPageState extends State<DetailContactPage> {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: Util.baseWidthHeight12),
+
+        /// Button Remove
+        Visibility(
+          visible: cubit.isRemoveActive,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: Util.baseWidthHeight48,
+            child: TextButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                // backgroundColor: WidgetStateProperty.all(Palette.red),
+                shape: WidgetStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Util.baseRoundedCorner),
+                    side: BorderSide(color: Palette.red),
+                  ),
+                ),
+              ),
+              child: Text(
+                "Remove",
+                style: TextStyle(
+                  color: Palette.red,
+                  fontWeight: FontWeight.w500,
+                  fontSize: Util.baseTextSize18,
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: Util.baseWidthHeight12),
+
+        /// Button Save
+        Visibility(
+          visible: cubit.isSaveActive,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: Util.baseWidthHeight48,
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  Routes.detail,
+                  arguments: {"user": cubit.user, "isEdit": true},
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Palette.lightBlue),
+                shape: WidgetStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Util.baseRoundedCorner),
+                  ),
+                ),
+              ),
+              child: Text(
+                "Save",
+                style: TextStyle(
+                  color: Palette.blue,
+                  fontWeight: FontWeight.w800,
+                  fontSize: Util.baseTextSize18,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -139,8 +222,13 @@ class DetailContactPageState extends State<DetailContactPage> {
     );
   }
 
-  /// First Name Form
-  Container formFirstName(DetailContactCubit cubit) {
+  /// Input Text Field
+  Container inputTextField(
+    DetailContactCubit cubit,
+    TextEditingController controller,
+    String title, [
+    bool isRequired = false,
+  ]) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
       child: Column(
@@ -149,193 +237,29 @@ class DetailContactPageState extends State<DetailContactPage> {
         children: [
           RichText(
             text: TextSpan(
-              text: 'First Name ',
+              text: title,
               style: TextStyle(
                 color: Palette.black,
                 fontWeight: FontWeight.w500,
                 fontSize: Util.baseTextSize14,
               ),
               children: <TextSpan>[
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(
-                    color: Palette.red,
-                    fontWeight: FontWeight.w500,
-                    fontSize: Util.baseTextSize14,
-                  ),
-                ),
+                isRequired
+                    ? TextSpan(
+                        text: '*',
+                        style: TextStyle(
+                          color: Palette.red,
+                          fontWeight: FontWeight.w500,
+                          fontSize: Util.baseTextSize14,
+                        ),
+                      )
+                    : TextSpan(),
               ],
             ),
           ),
           SizedBox(height: Util.baseWidthHeight6),
           TextFormField(
-            controller: cubit.firstNameController,
-            onTapOutside: (value) {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            onEditingComplete: () {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            validator: (value) {
-              return null;
-            },
-            decoration: InputDecoration(
-              enabled: true,
-              filled: false,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Last Name Form
-  Container formLastName(DetailContactCubit cubit) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: 'Last Name ',
-              style: TextStyle(
-                color: Palette.black,
-                fontWeight: FontWeight.w500,
-                fontSize: Util.baseTextSize14,
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(
-                    color: Palette.red,
-                    fontWeight: FontWeight.w500,
-                    fontSize: Util.baseTextSize14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: Util.baseWidthHeight6),
-          TextFormField(
-            controller: cubit.lastNameController,
-            onTapOutside: (value) {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            onEditingComplete: () {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            validator: (value) {
-              return null;
-            },
-            decoration: InputDecoration(
-              enabled: true,
-              filled: false,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container formEmail(DetailContactCubit cubit) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: 'Email',
-              style: TextStyle(
-                color: Palette.black,
-                fontWeight: FontWeight.w500,
-                fontSize: Util.baseTextSize14,
-              ),
-              children: <TextSpan>[],
-            ),
-          ),
-          SizedBox(height: Util.baseWidthHeight6),
-          TextFormField(
-            controller: cubit.emailController,
-            onTapOutside: (value) {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            onEditingComplete: () {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            validator: (value) {
-              return null;
-            },
-            decoration: InputDecoration(
-              enabled: true,
-              filled: false,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container formDob(DetailContactCubit cubit) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: 'Date of Birth',
-              style: TextStyle(
-                color: Palette.black,
-                fontWeight: FontWeight.w500,
-                fontSize: Util.baseTextSize14,
-              ),
-              children: <TextSpan>[],
-            ),
-          ),
-          SizedBox(height: Util.baseWidthHeight6),
-          TextFormField(
-            controller: cubit.firstNameController,
+            controller: controller,
             onTapOutside: (value) {
               FocusManager.instance.primaryFocus!.unfocus();
             },

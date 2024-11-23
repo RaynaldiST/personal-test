@@ -11,6 +11,9 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
 
   dynamic data;
   late bool isEdited = false;
+  late bool isSaveActive = false;
+  late bool isRemoveActive = false;
+  late bool isUpdateActive = false;
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -30,7 +33,18 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
       isEdited = true;
       user = data["user"];
 
+      isUpdateActive = true;
+      isRemoveActive = true;
+
       userInitial = "${user.firstName![0]}${user.lastName![0]}";
+
+      firstNameController.text = user.firstName!;
+      lastNameController.text = user.lastName!;
+      emailController.text = user.email!;
+      dobController.text = user.dob!;
+
+    } else {
+      isSaveActive = true;
     }
 
     emit(DetailContactLoaded());
