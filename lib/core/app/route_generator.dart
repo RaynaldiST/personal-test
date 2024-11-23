@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_project/constant/routes.dart';
+import 'package:test_project/modules/auth/bloc/auth_cubit.dart';
+import 'package:test_project/modules/auth/ui/auth_page.dart';
 import 'package:test_project/modules/main/bloc/main_cubit.dart';
 import 'package:test_project/modules/main/ui/main_page.dart';
 

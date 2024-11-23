@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Palette {
   static Color white = Colors.white;
   static Color blue = Color(0xff0077B6);
+  static Color lightBlue = Color(0xff96D3F2);
   static Color lightRed = Color(0xffED1C2E);
   static Color black = Colors.black;
   static Color darkGrey = Color(0xffCCCCCC);
