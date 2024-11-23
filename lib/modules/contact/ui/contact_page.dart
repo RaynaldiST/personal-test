@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -37,13 +39,21 @@ class ContactPageState extends State<ContactPage> {
               horizontal: Util.basePaddingMargin16,
             ),
             physics: BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                contentInputField(context, cubit),
-                contentListContact(context, cubit),
-              ],
+            child: RefreshIndicator(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  contentInputField(context, cubit),
+                  contentListContact(context, cubit),
+                ],
+              ),
+              notificationPredicate: (ScrollNotification notification) =>
+                  notification.depth == 1,
+              onRefresh: () async {
+                cubit.isRefresh = true;
+                cubit.initCubit();
+              },
             ),
           );
         },
@@ -99,10 +109,16 @@ class ContactPageState extends State<ContactPage> {
                 Routes.detail,
                 arguments: {
                   "user": user,
-                  "isEdit": false,
+                  "isEdit": true,
                   "isFromProfile": false,
                 },
-              );
+              ).then((dynamic value) {
+                if (value['isUpdate'] == true) {
+                  cubit.updateData(value['user']);
+                } else {
+                  cubit.removeData(value['user']);
+                }
+              });
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin10),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/constant/routes.dart';
 import 'package:test_project/constant/util.dart';
 import 'package:test_project/core/app/palette.dart';
@@ -14,6 +16,9 @@ class DetailContactPage extends StatefulWidget {
 class DetailContactPageState extends State<DetailContactPage> {
   @override
   Widget build(BuildContext context) {
+    var cubit = context.read<DetailContactCubit>();
+    FToast toast = FToast().init(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -25,7 +30,45 @@ class DetailContactPageState extends State<DetailContactPage> {
         ),
       ),
       body: BlocConsumer<DetailContactCubit, DetailContactState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is DetailContactValid) {
+            /// Navigate to last page and update the selected data
+            Navigator.of(context).pop({
+              "isUpdate": true,
+              "user": cubit.userUpdate,
+            });
+          }
+
+          if (state is DetailContactDelete) {
+            Navigator.of(context).pop({
+              "isUpdate": false,
+              "user": cubit.user,
+            });
+          }
+
+          if (state is DetailContactInvalid) {
+            toast.showToast(
+              gravity: ToastGravity.BOTTOM,
+              child: Container(
+                alignment: Alignment.center,
+                width: Util.baseWidthHeight210,
+                height: Util.baseWidthHeight32,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Util.baseRoundedCorner),
+                  color: Palette.red,
+                ),
+                child: Text(
+                  "${cubit.errorMessage}",
+                  style: TextStyle(
+                    color: Palette.white,
+                    fontSize: Util.baseTextSize14,
+                  ),
+                ),
+              ),
+              toastDuration: Duration(seconds: 3),
+            );
+          }
+        },
         builder: (context, state) {
           return SingleChildScrollView(
             physics: BouncingScrollPhysics(),
@@ -82,7 +125,17 @@ class DetailContactPageState extends State<DetailContactPage> {
           /// Sub Information
           containerSpacer("Sub Information"),
 
-          inputTextField(cubit, cubit.emailController, "Email"),
+          inputTextField(
+            cubit,
+            cubit.emailController,
+            "Email",
+            false,
+            [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'([a-z]|[A-Z]|[0-9]|[@.])'),
+              )
+            ],
+          ),
 
           inputTextField(cubit, cubit.dobController, "Date of Birth"),
 
@@ -109,10 +162,11 @@ class DetailContactPageState extends State<DetailContactPage> {
             height: Util.baseWidthHeight48,
             child: TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(
-                  Routes.detail,
-                  arguments: {"user": cubit.user, "isEdit": true},
-                );
+                if (cubit.data["isFromProfile"]) {
+                  cubit.postCubit();
+                } else {
+                  cubit.validateInput();
+                }
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(Palette.lightBlue),
@@ -142,7 +196,9 @@ class DetailContactPageState extends State<DetailContactPage> {
             width: MediaQuery.of(context).size.width,
             height: Util.baseWidthHeight48,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                cubit.removeData();
+              },
               style: ButtonStyle(
                 // backgroundColor: WidgetStateProperty.all(Palette.red),
                 shape: WidgetStateProperty.all<OutlinedBorder>(
@@ -231,65 +287,78 @@ class DetailContactPageState extends State<DetailContactPage> {
     TextEditingController controller,
     String title, [
     bool isRequired = false,
+    List<TextInputFormatter>? inputFormatters,
   ]) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: title,
-              style: TextStyle(
-                color: Palette.black,
-                fontWeight: FontWeight.w500,
-                fontSize: Util.baseTextSize14,
-              ),
-              children: <TextSpan>[
-                isRequired
-                    ? TextSpan(
-                        text: '*',
-                        style: TextStyle(
-                          color: Palette.red,
-                          fontWeight: FontWeight.w500,
-                          fontSize: Util.baseTextSize14,
-                        ),
-                      )
-                    : TextSpan(),
-              ],
-            ),
-          ),
-          SizedBox(height: Util.baseWidthHeight6),
-          TextFormField(
-            controller: controller,
-            onTapOutside: (value) {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            onEditingComplete: () {
-              FocusManager.instance.primaryFocus!.unfocus();
-            },
-            validator: (value) {
-              return null;
-            },
-            decoration: InputDecoration(
-              enabled: true,
-              filled: false,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
+      child: Form(
+        autovalidateMode: AutovalidateMode.disabled,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text: TextSpan(
+                text: title,
+                style: TextStyle(
+                  color: Palette.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: Util.baseTextSize14,
                 ),
-                borderSide: BorderSide(color: Palette.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  Util.baseRoundedCorner15,
-                ),
-                borderSide: BorderSide(color: Palette.blue),
+                children: <TextSpan>[
+                  isRequired
+                      ? TextSpan(
+                          text: '*',
+                          style: TextStyle(
+                            color: Palette.red,
+                            fontWeight: FontWeight.w500,
+                            fontSize: Util.baseTextSize14,
+                          ),
+                        )
+                      : TextSpan(),
+                ],
               ),
             ),
-          ),
-        ],
+            SizedBox(height: Util.baseWidthHeight6),
+            TextFormField(
+              controller: controller,
+              inputFormatters: inputFormatters,
+              onTapOutside: (value) {
+                FocusManager.instance.primaryFocus!.unfocus();
+              },
+              onEditingComplete: () {
+                FocusManager.instance.primaryFocus!.unfocus();
+              },
+              validator: (value) {
+                if (cubit.firstNameController.text.isEmpty) {
+                  return "First name required";
+                }
+
+                if (cubit.lastNameController.text.isEmpty) {
+                  return "Last name required";
+                }
+
+                return null;
+              },
+              decoration: InputDecoration(
+                enabled: true,
+                filled: false,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    Util.baseRoundedCorner15,
+                  ),
+                  borderSide: BorderSide(color: Palette.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    Util.baseRoundedCorner15,
+                  ),
+                  borderSide: BorderSide(color: Palette.blue),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

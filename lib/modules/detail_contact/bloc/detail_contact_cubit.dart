@@ -22,8 +22,12 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
 
   FlutterSecureStorage secureStorage = FlutterSecureStorage();
   User user = User();
+  User userUpdate = User();
+
+  final formKey = GlobalKey<FormState>();
 
   String userInitial = "";
+  String errorMessage = "";
 
   @override
   FutureOr<void> initCubit() {
@@ -56,16 +60,42 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
   FutureOr<void> postCubit() {
     if (data["isFromProfile"]) {
       /// Update profile on cache
-    } else if (!data["isFromProfile"]) {
-      /// Update profile in object
     }
+
+    userUpdate = User(
+      id: user.id,
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      dob: dobController.text,
+    );
   }
 
   FutureOr<void> removeData() {
     if (data["isFromProfile"]) {
       /// remove data on cache
-    } else if (!data["isFromProfile"]) {
-      /// remove profile in object
     }
+
+    emit(DetailContactDelete());
+  }
+
+  FutureOr<void> validateInput() async {
+    if (firstNameController.text.isEmpty) {
+      errorMessage = "First name cant be empty";
+      emit(DetailContactInvalid());
+    }
+
+    if (lastNameController.text.isEmpty) {
+      errorMessage = "Last name cant be empty";
+      emit(DetailContactInvalid());
+    }
+
+    if (!emailController.text.contains("@")) {
+      errorMessage = "Email invalid";
+      emit(DetailContactInvalid());
+    }
+
+    postCubit();
+    emit(DetailContactValid());
   }
 }

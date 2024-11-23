@@ -33,6 +33,7 @@ class ProfileCubit extends BaseCubit<ProfileState> {
   @override
   FutureOr<void> postCubit() {
     secureStorage.delete(key: Preferences.user);
+    secureStorage.delete(key: Preferences.contacts);
     emit(ProfileUnauthenticated());
   }
 }
