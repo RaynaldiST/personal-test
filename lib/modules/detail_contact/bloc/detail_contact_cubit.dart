@@ -42,7 +42,6 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
       lastNameController.text = user.lastName!;
       emailController.text = user.email!;
       dobController.text = user.dob!;
-
     } else {
       isSaveActive = true;
     }
@@ -54,5 +53,19 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
   FutureOr<void> loadCubit() {}
 
   @override
-  FutureOr<void> postCubit() {}
+  FutureOr<void> postCubit() {
+    if (data["isFromProfile"]) {
+      /// Update profile on cache
+    } else if (!data["isFromProfile"]) {
+      /// Update profile in object
+    }
+  }
+
+  FutureOr<void> removeData() {
+    if (data["isFromProfile"]) {
+      /// remove data on cache
+    } else if (!data["isFromProfile"]) {
+      /// remove profile in object
+    }
+  }
 }

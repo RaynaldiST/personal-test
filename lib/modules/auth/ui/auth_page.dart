@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/constant/routes.dart';
 import 'package:test_project/constant/util.dart';
 import 'package:test_project/core/app/palette.dart';
@@ -15,6 +16,8 @@ class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
+    FToast toast = FToast().init(context);
+
     return Scaffold(
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -23,6 +26,29 @@ class AuthPageState extends State<AuthPage> {
               context,
               Routes.landing,
               (Route<dynamic> route) => false,
+            );
+          }
+
+          if (state is AuthFailed) {
+            toast.showToast(
+              gravity: ToastGravity.BOTTOM,
+              child: Container(
+                alignment: Alignment.center,
+                width: Util.baseWidthHeight120,
+                height: Util.baseWidthHeight32,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Util.baseRoundedCorner),
+                  color: Palette.red,
+                ),
+                child: Text(
+                  "Email not found",
+                  style: TextStyle(
+                    color: Palette.white,
+                    fontSize: Util.baseTextSize14,
+                  ),
+                ),
+              ),
+              toastDuration: Duration(seconds: 3),
             );
           }
         },

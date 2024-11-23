@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:test_project/constant/routes.dart';
 import 'package:test_project/core/app/route_generator.dart';
 import 'package:test_project/core/app/theme.dart';
@@ -19,6 +20,7 @@ class App extends StatelessWidget {
       ],
       child: MaterialApp(
         theme: basicTheme,
+        builder: FToastBuilder(),
         debugShowCheckedModeBanner: Env.isDevelopment,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: Routes.landing,

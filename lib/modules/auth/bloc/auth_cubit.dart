@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:test_project/component/bloc/base_cubit.dart';
 import 'package:test_project/constant/preferences.dart';
 import 'package:test_project/modules/auth/bloc/auth_state.dart';
+import 'package:test_project/modules/auth/repository/auth_repository.dart';
 
 class AuthCubit extends BaseCubit<AuthState> {
+  AuthRepository repository = AuthRepository();
+
   AuthCubit() : super(AuthLoading());
 
   late TextEditingController emailController = TextEditingController();
@@ -28,17 +32,21 @@ class AuthCubit extends BaseCubit<AuthState> {
   @override
   FutureOr<void> postCubit() {}
 
-  FutureOr<void> validateUser() {
-    Map<String, String> user = {
-      "id": "5c8a80f575270ddb54a18f86",
-      "firstName": "Lidia",
-      "lastName": "Wilkins",
-      "email": "lidiawilkins@furnafix.com",
-      "dob": "30/1/1962"
-    };
+  FutureOr<void> validateUser() async {
+    String emailUser = emailController.text;
+    var params = {"email": emailUser};
 
-    secureStorage.write(key: Preferences.user, value: jsonEncode(user));
+    var response = await repository.validateEmail(params);
 
-    emit(AuthAuthenticate());
+    if (response["isValid"] == true) {
+      Map<String, dynamic> user = response["user"].toJson();
+      secureStorage.write(key: Preferences.user, value: jsonEncode(user));
+      emit(AuthAuthenticate());
+      return;
+    } else {
+      emit(AuthFailed());
+      emit(AuthLoaded());
+      return;
+    }
   }
 }

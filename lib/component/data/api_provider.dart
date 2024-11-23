@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 class ApiProvider {
-  Future<Map<String, dynamic>?> getContactList() async {
+  Future<List<dynamic>> getContactList() async {
     var data = await rootBundle.loadString('assets/test_data.json');
     var dataEncoded = jsonDecode(data);
     return dataEncoded;

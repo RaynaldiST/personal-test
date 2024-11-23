@@ -57,14 +57,16 @@ class DetailContactPageState extends State<DetailContactPage> {
               shape: BoxShape.circle,
               color: Palette.blue,
             ),
-            child: Text(
-              "${cubit.userInitial}",
-              style: TextStyle(
-                color: Palette.white,
-                fontWeight: FontWeight.w200,
-                fontSize: Util.baseTextSize52,
-              ),
-            ),
+            child: cubit.isSaveActive
+                ? Image.asset("assets/icons/ic_user_white.png")
+                : Text(
+                    "${cubit.userInitial}",
+                    style: TextStyle(
+                      color: Palette.white,
+                      fontWeight: FontWeight.w200,
+                      fontSize: Util.baseTextSize52,
+                    ),
+                  ),
           ),
           SizedBox(height: Util.baseWidthHeight32),
 

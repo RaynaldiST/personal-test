@@ -140,7 +140,11 @@ class ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 Navigator.of(context).pushNamed(
                   Routes.detail,
-                  arguments: {"user": cubit.user, "isEdit": true},
+                  arguments: {
+                    "user": cubit.user,
+                    "isEdit": true,
+                    "isFromProfile": true,
+                  },
                 );
               },
               style: ButtonStyle(
