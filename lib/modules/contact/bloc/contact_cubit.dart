@@ -86,4 +86,28 @@ class ContactCubit extends BaseCubit<ContactState> {
     secureStorage.write(key: Preferences.contacts, value: jsonEncode(users));
     emit(ContactLoaded(users));
   }
+
+  FutureOr<void> searchContact() async {
+    emit(ContactSearchStart());
+    String? contactsString = await secureStorage.read(
+      key: Preferences.contacts,
+    );
+
+    List<dynamic> contactsList = jsonDecode(contactsString!);
+    users = contactsList.map((element) => User.fromJson(element)).toList();
+
+    if (searchController.text.isEmpty) {
+      emit(ContactLoaded(users));
+      return;
+    }
+
+    emit(ContactSearchLoading());
+    users.removeWhere(
+      (element) =>
+          element.firstName!.toLowerCase() !=
+          searchController.text.toLowerCase(),
+    );
+
+    emit(ContactSearchLoaded(users));
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:test_project/component/data/models/user.dart';
 import 'package:test_project/constant/routes.dart';
 import 'package:test_project/constant/util.dart';
 import 'package:test_project/core/app/palette.dart';
@@ -33,6 +34,32 @@ class ContactPageState extends State<ContactPage> {
       body: BlocConsumer<ContactCubit, ContactState>(
         listener: (context, state) {},
         builder: (context, state) {
+          if (state is ContactSearchLoaded) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: Util.basePaddingMargin12,
+                horizontal: Util.basePaddingMargin16,
+              ),
+              physics: BouncingScrollPhysics(),
+              child: RefreshIndicator(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    contentInputField(context, cubit),
+                    contentListContactSearch(context, cubit),
+                  ],
+                ),
+                notificationPredicate: (ScrollNotification notification) =>
+                    notification.depth == 1,
+                onRefresh: () async {
+                  cubit.isRefresh = true;
+                  cubit.initCubit();
+                },
+              ),
+            );
+          }
+
           return SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               vertical: Util.basePaddingMargin12,
@@ -56,6 +83,24 @@ class ContactPageState extends State<ContactPage> {
               },
             ),
           );
+        },
+      ),
+    );
+  }
+
+  Container contentListContactSearch(
+    BuildContext context,
+    ContactCubit cubit,
+  ) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin18),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: cubit.users.length,
+        itemBuilder: (context, index) {
+          User user = cubit.users[index];
+          return contentListView(context, user, cubit);
         },
       ),
     );
@@ -103,85 +148,94 @@ class ContactPageState extends State<ContactPage> {
               .compareTo(item2.group!.toLowerCase());
         },
         itemBuilder: (context, user) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                Routes.detail,
-                arguments: {
-                  "user": user,
-                  "isEdit": true,
-                  "isFromProfile": false,
-                },
-              ).then((dynamic value) {
-                if (value['isUpdate'] == true) {
-                  cubit.updateData(value['user']);
-                } else {
-                  cubit.removeData(value['user']);
-                }
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: Util.baseWidthHeight48,
-                    height: Util.baseWidthHeight48,
-                    padding: EdgeInsets.symmetric(
-                      vertical: Util.basePaddingMargin16,
-                    ),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Palette.blue,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      user.initialName!,
-                      style: TextStyle(
-                        color: Palette.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: Util.baseTextSize14,
-                      ),
+          return contentListView(context, user, cubit);
+        },
+      ),
+    );
+  }
+
+  /// Item List View
+  Widget contentListView(
+    BuildContext context,
+    User user,
+    ContactCubit cubit,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          Routes.detail,
+          arguments: {
+            "user": user,
+            "isEdit": true,
+            "isFromProfile": false,
+          },
+        ).then((dynamic value) {
+          if (value['isUpdate'] == true) {
+            cubit.updateData(value['user']);
+          } else {
+            cubit.removeData(value['user']);
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: Util.baseWidthHeight48,
+              height: Util.baseWidthHeight48,
+              padding: EdgeInsets.symmetric(
+                vertical: Util.basePaddingMargin16,
+              ),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Palette.blue,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                user.initialName!,
+                style: TextStyle(
+                  color: Palette.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: Util.baseTextSize14,
+                ),
+              ),
+            ),
+            SizedBox(width: Util.basePaddingMargin8),
+            RichText(
+              text: TextSpan(
+                text: "${user.firstName!}",
+                style: TextStyle(
+                  color: Palette.grey,
+                  fontWeight: FontWeight.w500,
+                  fontSize: Util.baseTextSize14,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: " ${user.lastName!}",
+                    style: TextStyle(
+                      color: Palette.grey,
+                      fontWeight: FontWeight.w500,
+                      fontSize: Util.baseTextSize14,
                     ),
                   ),
-                  SizedBox(width: Util.basePaddingMargin8),
-                  RichText(
-                    text: TextSpan(
-                      text: "${user.firstName!}",
-                      style: TextStyle(
-                        color: Palette.grey,
-                        fontWeight: FontWeight.w500,
-                        fontSize: Util.baseTextSize14,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: " ${user.lastName!}",
+                  cubit.user.email! == user.email
+                      ? TextSpan(
+                          text: " (you)",
                           style: TextStyle(
-                            color: Palette.grey,
-                            fontWeight: FontWeight.w500,
-                            fontSize: Util.baseTextSize14,
-                          ),
-                        ),
-                        cubit.user.email! == user.email
-                            ? TextSpan(
-                                text: " (you)",
-                                style: TextStyle(
-                                    color: Palette.grey,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: Util.baseTextSize14,
-                                    fontStyle: FontStyle.italic),
-                              )
-                            : TextSpan(),
-                      ],
-                    ),
-                  ),
+                              color: Palette.grey,
+                              fontWeight: FontWeight.w500,
+                              fontSize: Util.baseTextSize14,
+                              fontStyle: FontStyle.italic),
+                        )
+                      : TextSpan(),
                 ],
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -190,11 +244,14 @@ class ContactPageState extends State<ContactPage> {
     return Container(
       child: TextFormField(
         controller: cubit.searchController,
+        onTap: () => cubit.searchContact(),
         onTapOutside: (value) {
           FocusManager.instance.primaryFocus!.unfocus();
+          cubit.searchContact();
         },
         onEditingComplete: () {
           FocusManager.instance.primaryFocus!.unfocus();
+          cubit.searchContact();
         },
         validator: (value) {
           return null;
