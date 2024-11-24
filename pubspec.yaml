@@ -24,6 +24,7 @@ dependencies:
   flutter_secure_storage: ^4.2.1
   fluttertoast: ^8.2.8
   grouped_list: ^6.0.0
+  date_picker_plus: ^4.1.0
 
 
 dev_dependencies:

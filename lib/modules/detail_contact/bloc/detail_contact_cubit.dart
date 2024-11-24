@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:test_project/component/bloc/base_cubit.dart';
 import 'package:test_project/component/data/models/user.dart';
+import 'package:test_project/constant/preferences.dart';
 import 'package:test_project/modules/detail_contact/bloc/detail_contact_state.dart';
 
 class DetailContactCubit extends BaseCubit<DetailContactState> {
@@ -58,9 +60,8 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
 
   @override
   FutureOr<void> postCubit() {
-    if (data["isFromProfile"]) {
-      /// Update profile on cache
-    }
+    String? initialName =
+        "${firstNameController.text[0]}${lastNameController.text[0]}";
 
     userUpdate = User(
       id: user.id,
@@ -68,7 +69,17 @@ class DetailContactCubit extends BaseCubit<DetailContactState> {
       lastName: lastNameController.text,
       email: emailController.text,
       dob: dobController.text,
+      group: firstNameController.text[0],
+      initialName: initialName,
     );
+
+    if (data["isFromProfile"]) {
+      secureStorage.write(
+        key: Preferences.user,
+        value: jsonEncode(userUpdate.toJson()),
+      );
+      emit(DetailContactUpdated());
+    }
   }
 
   FutureOr<void> removeData() {

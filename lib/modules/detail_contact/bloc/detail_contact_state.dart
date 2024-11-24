@@ -28,3 +28,8 @@ class DetailContactDelete extends DetailContactState {
   @override
   List<Object?> get props => [];
 }
+
+class DetailContactUpdated extends DetailContactState {
+  @override
+  List<Object?> get props => [];
+}

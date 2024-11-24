@@ -1,7 +1,12 @@
+import 'dart:developer';
+
+import 'package:date_picker_plus/date_picker_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:test_project/constant/routes.dart';
 import 'package:test_project/constant/util.dart';
 import 'package:test_project/core/app/palette.dart';
@@ -44,6 +49,10 @@ class DetailContactPageState extends State<DetailContactPage> {
               "isUpdate": false,
               "user": cubit.user,
             });
+          }
+
+          if (state is DetailContactUpdated) {
+            Navigator.of(context).pop();
           }
 
           if (state is DetailContactInvalid) {
@@ -116,9 +125,11 @@ class DetailContactPageState extends State<DetailContactPage> {
           /// Main Information
           containerSpacer("Main Information"),
 
-          inputTextField(cubit, cubit.firstNameController, "First Name", true),
+          inputTextField(
+              context, cubit, cubit.firstNameController, "First Name", true),
 
-          inputTextField(cubit, cubit.lastNameController, "Last Name", true),
+          inputTextField(
+              context, cubit, cubit.lastNameController, "Last Name", true),
 
           SizedBox(height: Util.baseWidthHeight16),
 
@@ -126,18 +137,14 @@ class DetailContactPageState extends State<DetailContactPage> {
           containerSpacer("Sub Information"),
 
           inputTextField(
-            cubit,
-            cubit.emailController,
-            "Email",
-            false,
-            [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'([a-z]|[A-Z]|[0-9]|[@.])'),
-              )
-            ],
-          ),
+              context, cubit, cubit.emailController, "Email", false, [
+            FilteringTextInputFormatter.allow(
+              RegExp(r'([a-z]|[A-Z]|[0-9]|[@.])'),
+            )
+          ]),
 
-          inputTextField(cubit, cubit.dobController, "Date of Birth"),
+          inputTextField(context, cubit, cubit.dobController, "Date of Birth",
+              false, [], true),
 
           SizedBox(height: Util.baseWidthHeight16),
           containerActionButton(context, cubit),
@@ -283,11 +290,13 @@ class DetailContactPageState extends State<DetailContactPage> {
 
   /// Input Text Field
   Container inputTextField(
+    BuildContext context,
     DetailContactCubit cubit,
     TextEditingController controller,
     String title, [
     bool isRequired = false,
     List<TextInputFormatter>? inputFormatters,
+    bool readOnly = false,
   ]) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: Util.basePaddingMargin12),
@@ -340,10 +349,28 @@ class DetailContactPageState extends State<DetailContactPage> {
 
                 return null;
               },
+              onTap: () async {
+                if (readOnly) {
+                  var date = await showDatePickerDialog(
+                    context: context,
+                    maxDate: DateTime.now(),
+                    minDate: DateTime(1980),
+                  );
+                  String dateFormat = DateFormat("dd/MM/yyyy").format(date!);
+
+                  cubit.dobController.text = dateFormat;
+                }
+              },
+              readOnly: readOnly,
               decoration: InputDecoration(
-                enabled: true,
                 filled: false,
                 enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    Util.baseRoundedCorner15,
+                  ),
+                  borderSide: BorderSide(color: Palette.blue),
+                ),
+                disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(
                     Util.baseRoundedCorner15,
                   ),

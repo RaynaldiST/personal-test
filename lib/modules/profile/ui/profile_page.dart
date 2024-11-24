@@ -145,7 +145,7 @@ class ProfilePageState extends State<ProfilePage> {
                     "isEdit": true,
                     "isFromProfile": true,
                   },
-                );
+                ).then((value) => cubit.initCubit());
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(Palette.lightBlue),
